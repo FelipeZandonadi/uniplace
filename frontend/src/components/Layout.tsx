@@ -41,6 +41,8 @@ export function Layout() {
             <Icon name="board" size={18} />Mural</NavLink>
           <NavLink to="/vagas">
             <Icon name="briefcase" size={18} />Vagas</NavLink>
+          {user?.role === 'aluno' && <NavLink to="/minhas-candidaturas">
+            <Icon name="file" size={18} />Minhas candidaturas</NavLink>}
         </nav>
         <div className="account">
           <div className="avatar" aria-hidden="true">

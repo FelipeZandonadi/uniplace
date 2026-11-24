@@ -19,6 +19,8 @@ export type Categoria = 'aviso' | 'prazo' | 'alerta' | 'evento';
 
 export type TipoVaga = 'estagio' | 'bolsa' | 'monitoria';
 
+export type StatusCandidatura = 'enviada' | 'em_analise' | 'aprovada' | 'recusada';
+
 export interface Aviso {
   id: number;
   titulo: string;
@@ -40,6 +42,25 @@ export interface Vaga {
   aberta: boolean;
   autor: Author;
   ja_candidatou: boolean;
+  created_at: string;
+}
+
+export interface Candidatura {
+  id: number;
+  vaga: {
+    id: number;
+    titulo: string;
+    tipo: TipoVaga;
+  };
+  aluno: {
+    id: number;
+    name: string;
+    email: string;
+    ra: string;
+    course: string;
+  };
+  mensagem: string;
+  status: StatusCandidatura;
   created_at: string;
 }
 

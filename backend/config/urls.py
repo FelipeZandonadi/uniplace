@@ -8,7 +8,7 @@ from rest_framework.routers import SimpleRouter
 from accounts import views as auth_views
 from mock_sso import views as mock_sso_views
 from mural.views import AvisoViewSet
-from vagas.views import VagaViewSet
+from vagas.views import CandidaturaViewSet, VagaViewSet
 
 admin.site.site_header = admin.site.site_title = "UniPlace"
 admin.site.index_title = "Administração"
@@ -16,6 +16,7 @@ admin.site.index_title = "Administração"
 router = SimpleRouter()
 router.register("avisos", AvisoViewSet, basename="aviso")
 router.register("vagas", VagaViewSet, basename="vaga")
+router.register("candidaturas", CandidaturaViewSet, basename="candidatura")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

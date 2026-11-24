@@ -9,6 +9,8 @@ import { Mural } from './pages/Mural';
 import { NovoAviso } from './pages/NovoAviso';
 import { Vagas } from './pages/Vagas';
 import { NovaVaga } from './pages/NovaVaga';
+import { CandidaturasVaga } from './pages/CandidaturasVaga';
+import { MinhasCandidaturas } from './pages/MinhasCandidaturas';
 import { NotFound } from './pages/NotFound';
 import './styles.css';
 
@@ -25,6 +27,8 @@ function App() {
               <Route path="/mural/novo" element={<NovoAviso />} />
               <Route path="/vagas" element={<Vagas />} />
               <Route path="/vagas/nova" element={<NovaVaga />} />
+              <Route path="/vagas/:id/candidaturas" element={<CandidaturasVaga />} />
+              <Route path="/minhas-candidaturas" element={<MinhasCandidaturas />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
