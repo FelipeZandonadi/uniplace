@@ -1,0 +1,10 @@
+__pycache__/
+*.pyc
+.venv/
+.env
+backend/media/
+node_modules/
+dist/
+# configurações locais de ferramentas (caminhos da máquina de cada um)
+.impeccable/
+.claude/
