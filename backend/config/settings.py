@@ -104,6 +104,7 @@ REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": ["rest_framework_simplejwt.authentication.JWTAuthentication"],
     "DEFAULT_PERMISSION_CLASSES": ["rest_framework.permissions.IsAuthenticated"],
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
+    "EXCEPTION_HANDLER": "accounts.exceptions.exception_handler",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
     # ponytail: contadores no cache local (por processo); com vários workers, apontar CACHES para Redis.
     "DEFAULT_THROTTLE_RATES": {
@@ -117,7 +118,56 @@ REST_FRAMEWORK = {
 }
 
 # --- Documentação OpenAPI / Swagger (/api/docs/) ---
-SPECTACULAR_SETTINGS = {"TITLE": "UniPlace API", "VERSION": "1.0.0", "SERVE_INCLUDE_SCHEMA": False}
+SPECTACULAR_SETTINGS = {
+    "TITLE": "UniPlace API",
+    "VERSION": "1.0.0 (Sprint 1 / MVP)",
+    "DESCRIPTION": """
+Hub de comunicação universitária da UEM. Erros seguem o formato `{"detail": "...", "code": "..."}`.
+
+**Login (US01):** a UniPlace não guarda senhas. O login acontece no SSO institucional, acessado por um
+**Adapter** (`MockSSOAdapter` no desenvolvimento — Plano B — ou `OIDCSSOAdapter` com o SSO real).
+O backend troca o *authorization code* pela identidade, exige e-mail `@uem.br` e emite um JWT próprio:
+access (15 min) no corpo da resposta + refresh rotacionado no cookie `HttpOnly` `uniplace_refresh`.
+
+**Como obter um token aqui no Swagger** (tudo no mesmo navegador: o `start` grava o cookie do PKCE que o `callback` exige):
+1. `GET /api/auth/sso/start/` → copie `authorize_url` e `state`.
+2. Abra `authorize_url` no navegador (prefixe com `http://localhost:8000` ou `http://localhost:5173`)
+   e entre com uma conta de teste (ex.: `prof.teste@uem.br` / `teste123`).
+3. Você será redirecionado para `/auth/callback?code=...&state=...`: copie o `code` da barra de endereço
+   (vale 60 s e é de uso único), mesmo que a página mostre erro.
+4. `POST /api/auth/sso/callback/` com `{"code": "...", "state": "..."}`.
+5. Copie o `access` da resposta, clique em **Authorize** e cole o token.
+""",
+    "TAGS": [
+        {"name": "Autenticação", "description": "US01 — SSO via Adapter + JWT"},
+        {"name": "Mural", "description": "US02/US03 — Mural de Avisos"},
+        {"name": "Vagas", "description": "US08 — Oportunidades (estágio, bolsa, monitoria)"},
+        {"name": "Candidaturas", "description": "US09 — Candidaturas às vagas"},
+    ],
+    "SERVE_INCLUDE_SCHEMA": False,
+    "COMPONENT_SPLIT_REQUEST": True,  # anexo aparece como upload binário no request
+    "SWAGGER_UI_DIST": "SIDECAR",
+    "SWAGGER_UI_FAVICON_HREF": "SIDECAR",
+    "REDOC_DIST": "SIDECAR",
+    # Persistir o Bearer grava o token no localStorage (sobrevive ao logout): só em desenvolvimento.
+    "SWAGGER_UI_SETTINGS": {"persistAuthorization": DEBUG},
+    # Docs públicas só em desenvolvimento; em produção, apenas admin (sessão do /admin/ ou Bearer).
+    "SERVE_PERMISSIONS": ["rest_framework.permissions.AllowAny" if DEBUG else "rest_framework.permissions.IsAdminUser"],
+    "SERVE_AUTHENTICATION": [
+        "rest_framework.authentication.SessionAuthentication",
+        "rest_framework_simplejwt.authentication.JWTAuthentication",
+    ],
+}
+
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=15),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    "ROTATE_REFRESH_TOKENS": True,
+    "BLACKLIST_AFTER_ROTATION": True,
+}
+
+REFRESH_COOKIE_NAME = "uniplace_refresh"
+REFRESH_COOKIE_PATH = "/api/auth/"
 
 # --- SSO (Adapter) ---
 SSO_ADAPTER = os.environ.get("SSO_ADAPTER", "mock")  # "mock" | "oidc"

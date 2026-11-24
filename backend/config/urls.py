@@ -5,6 +5,7 @@ from django.urls import include, path
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from rest_framework.routers import SimpleRouter
 
+from accounts import views as auth_views
 from mock_sso import views as mock_sso_views
 
 admin.site.site_header = admin.site.site_title = "UniPlace"
@@ -14,6 +15,11 @@ router = SimpleRouter()
 
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("api/auth/sso/start/", auth_views.sso_start),
+    path("api/auth/sso/callback/", auth_views.sso_callback),
+    path("api/auth/refresh/", auth_views.refresh),
+    path("api/auth/logout/", auth_views.logout),
+    path("api/auth/me/", auth_views.me),
     path("api/", include(router.urls)),
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
     path("api/docs/", SpectacularSwaggerView.as_view(url_name="schema"), name="docs"),
