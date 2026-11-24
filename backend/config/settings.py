@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     "accounts",
     "mock_sso",
     "mural",
+    "vagas",
 ]
 
 MIDDLEWARE = [

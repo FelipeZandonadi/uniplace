@@ -8,12 +8,14 @@ from rest_framework.routers import SimpleRouter
 from accounts import views as auth_views
 from mock_sso import views as mock_sso_views
 from mural.views import AvisoViewSet
+from vagas.views import VagaViewSet
 
 admin.site.site_header = admin.site.site_title = "UniPlace"
 admin.site.index_title = "Administração"
 
 router = SimpleRouter()
 router.register("avisos", AvisoViewSet, basename="aviso")
+router.register("vagas", VagaViewSet, basename="vaga")
 
 urlpatterns = [
     path("admin/", admin.site.urls),

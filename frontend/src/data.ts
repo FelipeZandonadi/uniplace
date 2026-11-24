@@ -1,10 +1,16 @@
-import type { Categoria } from './api';
+import type { Categoria, TipoVaga } from './api';
 
 export const categories: Record<Categoria, string> = {
   aviso: 'Avisos',
   prazo: 'Prazos',
   alerta: 'Alertas',
   evento: 'Eventos',
+};
+
+export const types: Record<TipoVaga, string> = {
+  estagio: 'Estágio',
+  bolsa: 'Bolsa',
+  monitoria: 'Monitoria',
 };
 
 // Só data ("2026-12-01") o JS lê como meia-noite UTC: formatar em UTC. Data e hora: fuso do usuário.

@@ -17,6 +17,8 @@ export interface Author {
 
 export type Categoria = 'aviso' | 'prazo' | 'alerta' | 'evento';
 
+export type TipoVaga = 'estagio' | 'bolsa' | 'monitoria';
+
 export interface Aviso {
   id: number;
   titulo: string;
@@ -25,6 +27,19 @@ export interface Aviso {
   prioridade: 'alta' | 'normal';
   anexo: string | null;
   autor: Author;
+  created_at: string;
+}
+
+export interface Vaga {
+  id: number;
+  titulo: string;
+  descricao: string;
+  tipo: TipoVaga;
+  curso: string;
+  prazo: string;
+  aberta: boolean;
+  autor: Author;
+  ja_candidatou: boolean;
   created_at: string;
 }
 

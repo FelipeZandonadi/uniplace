@@ -7,6 +7,8 @@ import { Login } from './pages/Login';
 import { AuthCallback } from './pages/AuthCallback';
 import { Mural } from './pages/Mural';
 import { NovoAviso } from './pages/NovoAviso';
+import { Vagas } from './pages/Vagas';
+import { NovaVaga } from './pages/NovaVaga';
 import { NotFound } from './pages/NotFound';
 import './styles.css';
 
@@ -21,6 +23,8 @@ function App() {
             <Route element={<Layout />}>
               <Route index element={<Mural />} />
               <Route path="/mural/novo" element={<NovoAviso />} />
+              <Route path="/vagas" element={<Vagas />} />
+              <Route path="/vagas/nova" element={<NovaVaga />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

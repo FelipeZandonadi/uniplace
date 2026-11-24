@@ -1,13 +1,17 @@
 """T15.3 — Carga inicial de dados mockados. Idempotente: pode rodar quantas vezes quiser."""
 
+from datetime import timedelta
+
 from django.contrib.auth.hashers import make_password
 from django.core.management.base import BaseCommand
 from django.db import transaction
+from django.utils import timezone
 
 from accounts.models import User
 from accounts.sso import SSOIdentity
 from mock_sso.models import MockIdentity
 from mural.models import Aviso
+from vagas.models import Vaga
 
 SENHA_TESTE = "teste123"
 ES = "Engenharia de Software"
@@ -54,7 +58,23 @@ class Command(BaseCommand):
                 defaults={"conteudo": conteudo, "categoria": categoria, "prioridade": prioridade, "autor": autor},
             )
 
+        hoje = timezone.localdate()
+        vagas = [
+            ("Estágio em Desenvolvimento Web", "estagio", ES, colab, 30,
+             "Estágio de 20h semanais em projetos com Python/Django e React. Bolsa-auxílio e auxílio-transporte."),
+            ("Monitoria de Algoritmos e Estruturas de Dados", "monitoria", ES, admin, 15,
+             "Apoio aos alunos do 1º ano em listas de exercícios e plantões de dúvidas. 12h semanais."),
+            ("Bolsa de Iniciação Científica (PIBIC)", "bolsa", "", colab, 45,
+             "Projeto de pesquisa em computação aplicada. Aberta a alunos de qualquer curso."),
+        ]
+        for titulo, tipo, curso, autor, dias, descricao in vagas:
+            Vaga.objects.get_or_create(
+                titulo=titulo,
+                defaults={"descricao": descricao, "tipo": tipo, "curso": curso, "autor": autor,
+                          "prazo": hoje + timedelta(days=dias)},
+            )
+
         self.stdout.write(self.style.SUCCESS(
             f"Seed OK: {MockIdentity.objects.count()} contas no Mock SSO (senha {SENHA_TESTE}), "
-            f"{Aviso.objects.count()} avisos."
+            f"{Aviso.objects.count()} avisos, {Vaga.objects.count()} vagas."
         ))
