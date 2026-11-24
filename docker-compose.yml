@@ -1,0 +1,18 @@
+# T15.1 — PostgreSQL do UniPlace
+services:
+  db:
+    image: postgres:17-alpine
+    environment:
+      POSTGRES_DB: uniplace
+      POSTGRES_USER: uniplace
+      POSTGRES_PASSWORD: uniplace
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U uniplace -d uniplace"]
+      interval: 3s
+      retries: 10
+volumes:
+  pgdata:

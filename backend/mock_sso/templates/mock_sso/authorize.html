@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Fazer login · SSO Institucional UEM (Mock)</title>
+<style>
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center;
+    padding: 24px; background: #0f172a; color: #e2e8f0;
+    font-family: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  }
+  .card {
+    width: 100%; max-width: 420px; background: #111c33; border: 1px solid #1e293b;
+    border-radius: 16px; padding: 32px; box-shadow: 0 20px 50px rgba(0, 0, 0, .35);
+  }
+  .pill {
+    display: inline-block; font-size: 11px; font-weight: 600; letter-spacing: .06em;
+    color: #10b981; background: rgba(16, 185, 129, .1); border: 1px solid rgba(16, 185, 129, .35);
+    border-radius: 999px; padding: 4px 10px;
+  }
+  h1 { font-size: 24px; margin: 20px 0 6px; color: #f8fafc; }
+  .subtitle { margin: 0 0 24px; color: #94a3b8; font-size: 14px; }
+  label { display: block; font-size: 13px; font-weight: 500; margin: 0 0 6px; color: #cbd5e1; }
+  input[type=text], input[type=password] {
+    width: 100%; padding: 11px 12px; margin-bottom: 16px; font: inherit; font-size: 15px;
+    color: #f8fafc; background: #0b1324; border: 1px solid #334155; border-radius: 10px;
+  }
+  input:focus { outline: 2px solid #10b981; outline-offset: 1px; border-color: transparent; }
+  .actions { display: flex; flex-direction: row-reverse; gap: 10px; margin-top: 4px; }
+  button { flex: 1; padding: 11px; font: inherit; font-weight: 600; border-radius: 10px; cursor: pointer; }
+  .primary { background: #10b981; color: #052e1f; border: 0; }
+  .primary:hover { background: #34d399; }
+  .secondary { background: transparent; color: #cbd5e1; border: 1px solid #334155; }
+  .secondary:hover { border-color: #64748b; }
+  .error {
+    margin-bottom: 16px; padding: 10px 12px; font-size: 14px; border-radius: 10px;
+    color: #fecaca; background: rgba(239, 68, 68, .12); border: 1px solid rgba(239, 68, 68, .4);
+  }
+  .accounts { margin-top: 24px; padding-top: 18px; border-top: 1px solid #1e293b; font-size: 13px; color: #94a3b8; }
+  .accounts ul { list-style: none; padding: 0; margin: 8px 0 0; }
+  .accounts li { display: flex; justify-content: space-between; padding: 3px 0; }
+  code { color: #e2e8f0; font-size: 12.5px; }
+  a.back { display: inline-block; margin-top: 20px; color: #10b981; font-size: 14px; text-decoration: none; }
+  a.back:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<main class="card">
+  <span class="pill">SSO INSTITUCIONAL UEM · SIMULADO (MOCK)</span>
+  <h1>Fazer login</h1>
+  <p class="subtitle">A UniPlace solicita acesso ao seu nome e e-mail.</p>
+
+  {% if fatal %}
+    <div class="error" role="alert">{{ fatal }}</div>
+  {% else %}
+    {% if error %}<div class="error" role="alert">{{ error }}</div>{% endif %}
+    <form method="post" action="">
+      {% csrf_token %}
+      <input type="hidden" name="response_type" value="{{ response_type }}">
+      <input type="hidden" name="client_id" value="{{ client_id }}">
+      <input type="hidden" name="redirect_uri" value="{{ redirect_uri }}">
+      <input type="hidden" name="state" value="{{ state }}">
+      <input type="hidden" name="code_challenge" value="{{ code_challenge }}">
+      <input type="hidden" name="code_challenge_method" value="{{ code_challenge_method }}">
+
+      <label for="login">E-mail institucional ou RA</label>
+      <input id="login" name="login" type="text" autocomplete="username" value="{{ login|default:'' }}" required autofocus>
+
+      <label for="password">Senha</label>
+      <input id="password" name="password" type="password" autocomplete="current-password" required>
+
+      <div class="actions">
+        {# "Entrar" vem primeiro no DOM: Enter submete o primeiro botão do form. #}
+        <button class="primary" type="submit">Entrar</button>
+        <button class="secondary" type="submit" name="cancel" value="1" formnovalidate>Cancelar</button>
+      </div>
+    </form>
+
+    <div class="accounts">
+      Contas de teste (e-mail ou RA, senha <code>teste123</code>):
+      <ul>
+        {% for email, ra, role in test_accounts %}<li><code>{{ email }} · {{ ra }}</code><span>{{ role }}</span></li>{% endfor %}
+      </ul>
+    </div>
+  {% endif %}
+
+  <a class="back" href="{{ frontend_url }}/login">← Voltar para a UniPlace</a>
+</main>
+</body>
+</html>
