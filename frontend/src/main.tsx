@@ -6,6 +6,7 @@ import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { AuthCallback } from './pages/AuthCallback';
 import { Mural } from './pages/Mural';
+import { NovoAviso } from './pages/NovoAviso';
 import { NotFound } from './pages/NotFound';
 import './styles.css';
 
@@ -19,6 +20,7 @@ function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
               <Route index element={<Mural />} />
+              <Route path="/mural/novo" element={<NovoAviso />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />
