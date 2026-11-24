@@ -5,11 +5,26 @@ Base: Etapa 1 (US01, US15, T01.x, T15.x), Etapa 2 (Adapter + Mock SSO) e Trello 
 
 ## Ambiente de desenvolvimento
 
+Na raiz do projeto, suba PostgreSQL, backend e frontend juntos:
+
+```bash
+docker compose up --build
+```
+
+O backend espera o banco ficar saudável, aplica as migrações e carrega os dados de
+teste antes de iniciar. Este Compose é **somente para desenvolvimento**, com
+`DEBUG=True` e SSO mock; não é uma configuração de produção.
+
 | Serviço  | URL                    | Observação                                   |
 |----------|------------------------|----------------------------------------------|
-| Frontend | http://localhost:5173  | Vite; faz proxy de `/api`, `/mock-sso`, `/media` → :8000 |
-| Backend  | http://localhost:8000  | Django + DRF                                  |
-| Postgres | localhost:5432         | `docker compose up -d db`                     |
+| Frontend | http://localhost:5173  | Vite; faz proxy de `/api`, `/mock-sso`, `/media` e `/static` para `backend:8000` na rede do Compose |
+| Backend  | http://localhost:8000  | Django + DRF; conecta ao PostgreSQL pelo serviço `db:5432` |
+| Postgres | localhost:5432         | Serviço `db`, com dados persistidos em volume |
+
+As URLs acima usam as portas padrão publicadas no host. Os nomes `backend` e `db`
+são endereços internos dos containers, não URLs para abrir no navegador. Para
+alterar portas ou executar backend/frontend fora dos containers, consulte
+[Como rodar no README](../README.md#como-rodar).
 
 Como o Vite faz proxy, o navegador enxerga **uma única origem** (`localhost:5173`): cookies e redirects funcionam sem CORS.
 

@@ -1,10 +1,11 @@
+from django.conf import settings
 from django.contrib.auth.hashers import make_password
 from django.test import TestCase
 
 from .models import MockIdentity
 
 VALID = {
-    "response_type": "code", "client_id": "uniplace", "redirect_uri": "http://localhost:5173/auth/callback", "state": "s",
+    "response_type": "code", "client_id": "uniplace", "redirect_uri": settings.SSO_REDIRECT_URIS[0], "state": "s",
     "code_challenge": "E9Melhoa2OwvFrEMTJguCHaoeK1t8URWbuGJSstw-cM", "code_challenge_method": "S256",
 }
 
@@ -34,7 +35,7 @@ class MockAuthorizeTests(TestCase):
     def test_cancel_redirects_with_access_denied(self):
         resp = self.client.post("/mock-sso/authorize/", {**VALID, "cancel": "1"})
         self.assertEqual(resp.status_code, 302)
-        self.assertEqual(resp["Location"], "http://localhost:5173/auth/callback?error=access_denied&state=s")
+        self.assertEqual(resp["Location"], f"{VALID['redirect_uri']}?error=access_denied&state=s")
 
     def test_login_by_email_or_ra(self):
         def entrar(login, password="teste123"):

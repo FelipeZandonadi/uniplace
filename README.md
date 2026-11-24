@@ -45,6 +45,57 @@ React PWA (:5173) ──/api──▶ Django + DRF (:8000) ──ORM──▶ Po
 
 ## Como rodar
 
+### Com Docker (recomendado)
+
+Na raiz do projeto, com Docker e Docker Compose instalados:
+
+```bash
+docker compose up --build
+```
+
+Sobe **PostgreSQL, backend e frontend**. O backend espera o banco ficar saudável, aplica as
+migrações e executa a carga idempotente de dados de teste antes de iniciar. Não é necessário
+instalar Python ou Node.js na máquina.
+
+- Aplicação: http://localhost:5173
+- Backend: http://localhost:8000
+- Swagger: http://localhost:5173/api/docs/
+
+O código é montado nos containers: alterações no backend e no frontend têm **hot reload**.
+Banco, anexos e dependências do frontend ficam em volumes separados; o `node_modules`
+local não é utilizado pelo container.
+
+Para aceitar bind mounts com permissões locais restritas (700/600), este Compose executa
+os serviços de aplicação como root **dentro dos containers**, sem alterar permissões no host.
+As imagens, fora do Compose, usam usuários sem privilégios. Os serviços ficam publicados
+somente em `127.0.0.1`.
+
+```bash
+docker compose up -d --build                  # rodar em segundo plano
+docker compose logs -f backend frontend       # acompanhar logs
+docker compose down                          # parar; preserva os volumes
+```
+
+Se alterar dependências Python, reconstrua a imagem do backend. Se alterar `package.json`
+ou `package-lock.json`, atualize também as dependências no volume e reinicie o frontend:
+
+```bash
+docker compose up -d --build backend
+docker compose run --rm --no-deps frontend npm ci
+docker compose restart frontend
+```
+
+Se alguma porta já estiver ocupada, configure `POSTGRES_PORT`, `BACKEND_PORT` ou
+`FRONTEND_PORT` ao executar o Compose. Exemplo:
+`FRONTEND_PORT=5174 docker compose up --build` (acesse http://localhost:5174).
+
+Este Compose é **somente para desenvolvimento**: usa `DEBUG=True`, SSO mock e credenciais
+locais conhecidas. Não deve ser usado como configuração de produção.
+
+### Sem Docker para backend/frontend
+
+Requer Python 3.12+ e Node.js 22.12+ (ou 24+). Inicie o backend:
+
 ```bash
 docker compose up -d db                       # PostgreSQL
 
@@ -53,8 +104,12 @@ python3 -m venv .venv && .venv/bin/pip install -r requirements.txt
 .venv/bin/python manage.py migrate
 .venv/bin/python manage.py seed               # contas de teste, avisos e vagas
 .venv/bin/python manage.py runserver 8000
+```
 
-cd ../frontend
+Em outro terminal, a partir da raiz do projeto:
+
+```bash
+cd frontend
 npm ci && npm run dev                         # http://localhost:5173
 ```
 
@@ -82,7 +137,19 @@ liga `DEBUG=True` por padrão, e apenas para os comandos locais acima.
 
 ## Testes
 
+Com os serviços do Compose em execução:
+
 ```bash
-cd backend && .venv/bin/python manage.py test   # fluxo SSO completo, permissões, uploads, candidaturas
-cd frontend && npm run build                    # type-check + build de produção
+docker compose exec backend python manage.py test
+docker compose exec backend python manage.py makemigrations --check --dry-run
+docker compose exec frontend npm run build -- --outDir /tmp/uniplace-dist
+```
+
+Sem containers para backend/frontend, execute a partir da raiz do projeto, com o
+PostgreSQL em execução e as dependências locais instaladas. Os parênteses mantêm o
+terminal na raiz ao final de cada comando:
+
+```bash
+(cd backend && .venv/bin/python manage.py test)  # fluxo SSO, permissões, uploads e candidaturas
+(cd frontend && npm run build)                   # type-check + build de produção
 ```
