@@ -145,9 +145,11 @@ docker compose exec backend python manage.py makemigrations --check --dry-run
 docker compose exec frontend npm run build -- --outDir /tmp/uniplace-dist
 ```
 
-Sem containers para backend/frontend:
+Sem containers para backend/frontend, execute a partir da raiz do projeto, com o
+PostgreSQL em execução e as dependências locais instaladas. Os parênteses mantêm o
+terminal na raiz ao final de cada comando:
 
 ```bash
-cd backend && .venv/bin/python manage.py test   # fluxo SSO completo, permissões, uploads, candidaturas
-cd frontend && npm run build                    # type-check + build de produção
+(cd backend && .venv/bin/python manage.py test)  # fluxo SSO, permissões, uploads e candidaturas
+(cd frontend && npm run build)                   # type-check + build de produção
 ```
