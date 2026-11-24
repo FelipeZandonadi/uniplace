@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     "drf_spectacular",
     "drf_spectacular_sidecar",  # assets do Swagger UI servidos localmente (funciona offline)
     "accounts",
+    "mock_sso",
 ]
 
 MIDDLEWARE = [
@@ -117,6 +118,23 @@ REST_FRAMEWORK = {
 
 # --- Documentação OpenAPI / Swagger (/api/docs/) ---
 SPECTACULAR_SETTINGS = {"TITLE": "UniPlace API", "VERSION": "1.0.0", "SERVE_INCLUDE_SCHEMA": False}
+
+# --- SSO (Adapter) ---
+SSO_ADAPTER = os.environ.get("SSO_ADAPTER", "mock")  # "mock" | "oidc"
+SSO_CLIENT_ID = os.environ.get("SSO_CLIENT_ID", "uniplace")
+SSO_REDIRECT_URIS = env_list("SSO_REDIRECT_URIS", f"{FRONTEND_URL}/auth/callback")
+SSO_ALLOWED_DOMAIN = os.environ.get("SSO_ALLOWED_DOMAIN", "uem.br")
+if SSO_ADAPTER == "mock" and not DEBUG:
+    raise ImproperlyConfigured("O Mock SSO só pode rodar com DEBUG=True; use SSO_ADAPTER=oidc.")
+
+# Usado apenas com SSO_ADAPTER=oidc (SSO real da universidade).
+OIDC_AUTHORIZE_URL = os.environ.get("OIDC_AUTHORIZE_URL", "")
+OIDC_TOKEN_URL = os.environ.get("OIDC_TOKEN_URL", "")
+OIDC_USERINFO_URL = os.environ.get("OIDC_USERINFO_URL", "")
+OIDC_CLIENT_ID = os.environ.get("OIDC_CLIENT_ID", "")
+OIDC_CLIENT_SECRET = os.environ.get("OIDC_CLIENT_SECRET", "")
+OIDC_SCOPE = os.environ.get("OIDC_SCOPE", "openid email profile")
+OIDC_TIMEOUT = int(os.environ.get("OIDC_TIMEOUT", "5"))
 
 if not DEBUG:
     SECURE_SSL_REDIRECT = True
