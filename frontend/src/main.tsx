@@ -5,6 +5,7 @@ import { AuthProvider, ProtectedRoute } from './auth';
 import { Layout } from './components/Layout';
 import { Login } from './pages/Login';
 import { AuthCallback } from './pages/AuthCallback';
+import { Mural } from './pages/Mural';
 import { NotFound } from './pages/NotFound';
 import './styles.css';
 
@@ -17,7 +18,7 @@ function App() {
           <Route path="/auth/callback" element={<AuthCallback />} />
           <Route element={<ProtectedRoute />}>
             <Route element={<Layout />}>
-              <Route index element={<p>Sessão iniciada.</p>} />
+              <Route index element={<Mural />} />
             </Route>
           </Route>
           <Route path="*" element={<NotFound />} />

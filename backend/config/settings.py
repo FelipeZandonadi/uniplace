@@ -39,6 +39,7 @@ INSTALLED_APPS = [
     "drf_spectacular_sidecar",  # assets do Swagger UI servidos localmente (funciona offline)
     "accounts",
     "mock_sso",
+    "mural",
 ]
 
 MIDDLEWARE = [
@@ -106,6 +107,7 @@ REST_FRAMEWORK = {
     "DEFAULT_RENDERER_CLASSES": ["rest_framework.renderers.JSONRenderer"],
     "EXCEPTION_HANDLER": "accounts.exceptions.exception_handler",
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_PAGINATION_CLASS": "config.pagination.Paginacao",
     # ponytail: contadores no cache local (por processo); com vários workers, apontar CACHES para Redis.
     "DEFAULT_THROTTLE_RATES": {
         "publicacao": "30/hour",  # criação de avisos (com upload) e vagas, por usuário

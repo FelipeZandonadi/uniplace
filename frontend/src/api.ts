@@ -15,6 +15,19 @@ export interface Author {
   role: Role;
 }
 
+export type Categoria = 'aviso' | 'prazo' | 'alerta' | 'evento';
+
+export interface Aviso {
+  id: number;
+  titulo: string;
+  conteudo: string;
+  categoria: Categoria;
+  prioridade: 'alta' | 'normal';
+  anexo: string | null;
+  autor: Author;
+  created_at: string;
+}
+
 export type Session = {
   access: string;
   user: User;

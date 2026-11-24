@@ -38,7 +38,7 @@ export function Layout() {
         </Link>
         <nav aria-label="Navegação principal" className="nav">
           <NavLink to="/" end>
-            <Icon name="board" size={18} />Início</NavLink>
+            <Icon name="board" size={18} />Mural</NavLink>
         </nav>
         <div className="account">
           <div className="avatar" aria-hidden="true">

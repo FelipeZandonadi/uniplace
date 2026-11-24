@@ -7,6 +7,7 @@ from django.db import transaction
 from accounts.models import User
 from accounts.sso import SSOIdentity
 from mock_sso.models import MockIdentity
+from mural.models import Aviso
 
 SENHA_TESTE = "teste123"
 ES = "Engenharia de Software"
@@ -34,6 +35,26 @@ class Command(BaseCommand):
                 create_defaults={**fields, "password": make_password(SENHA_TESTE)},
             )
 
+        # Autores dos dados de exemplo (normalmente surgem no 1º login via SSO).
+        prof, colab, admin = (User.objects.sync_from_sso(i) for i in IDENTIDADES[1:4])
+
+        avisos = [
+            ("Comunicado Oficial: Recesso Acadêmico", "alerta", "alta", admin,
+             "Não haverá aulas entre 22/12 e 05/01. Os serviços administrativos funcionarão em regime de plantão."),
+            ("Aviso: Prazo para Entrega de TCC", "prazo", "normal", prof,
+             "A versão final do TCC deve ser enviada pelo sistema acadêmico até 05/12, às 23h59."),
+            ("Cineclube UniPlace: Sessão Especial", "evento", "normal", colab,
+             "Sessão especial no anfiteatro do bloco C, sexta-feira às 19h. Entrada gratuita."),
+            ("Dicas de Estudo para o Semestre", "aviso", "normal", prof,
+             "Organize um cronograma semanal, revise o conteúdo após cada aula e use os horários de monitoria."),
+        ]
+        for titulo, categoria, prioridade, autor, conteudo in avisos:
+            Aviso.objects.get_or_create(
+                titulo=titulo,
+                defaults={"conteudo": conteudo, "categoria": categoria, "prioridade": prioridade, "autor": autor},
+            )
+
         self.stdout.write(self.style.SUCCESS(
             f"Seed OK: {MockIdentity.objects.count()} contas no Mock SSO (senha {SENHA_TESTE}), "
+            f"{Aviso.objects.count()} avisos."
         ))

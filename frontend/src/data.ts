@@ -1,3 +1,17 @@
+import type { Categoria } from './api';
+
+export const categories: Record<Categoria, string> = {
+  aviso: 'Avisos',
+  prazo: 'Prazos',
+  alerta: 'Alertas',
+  evento: 'Eventos',
+};
+
+// Só data ("2026-12-01") o JS lê como meia-noite UTC: formatar em UTC. Data e hora: fuso do usuário.
+export const date = (value: string) =>
+  new Intl.DateTimeFormat('pt-BR', { dateStyle: 'medium', timeZone: value.length === 10 ? 'UTC' : undefined })
+    .format(new Date(value));
+
 export const message = (error: unknown) =>
   error instanceof Error ? error.message : 'Não foi possível conectar. Tente novamente.';
 
